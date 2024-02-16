@@ -47,20 +47,10 @@ model User {
   coverImage    String?
   description   String?
   verified      Boolean?
-  socialLinks   SocialLink[]
   accounts      Account[]
   sessions      Session[]
   products      Product[]
   categories    Categories[]
-}
-
-
-model SocialLink {
-  id        String @id @default(cuid()) @map("_id")
-  platform  String 
-  url       String
-  user      User?   @relation(fields: [userEmail], references: [email])
-  userEmail String?
 }
 
 model VerificationToken {
@@ -93,4 +83,12 @@ model Product {
   creator User @relation(fields: [userEmail], references: [email])
   createdAt DateTime @default(now())
   isFeatured Boolean @default(false)
+}
+
+model Store {
+  id        String @id @default(cuid()) @map("_id")
+  name      String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
