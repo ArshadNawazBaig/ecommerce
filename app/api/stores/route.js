@@ -4,12 +4,12 @@ import { NextResponse } from 'next/server';
 
 export const POST = async (req) => {
   try {
-    const { id } = await getAuthSession();
-    const body = req.json();
+    const session = await getAuthSession();
+    const body = await req.json();
 
     const { name } = body;
 
-    if (!id) {
+    if (!session?.user?.email) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
@@ -17,12 +17,23 @@ export const POST = async (req) => {
       return new NextResponse('Name is required', { status: 400 });
     }
 
-    const store = await prisma.store.create({
-      data: { name, id },
+    const existingStore = await prisma.store.findFirst({
+      where: { name },
     });
 
-    return NextResponse(JSON.stringify(store, { status: 200 }));
+    if (existingStore) {
+      return new NextResponse('Store with this name is already exists', {
+        status: 400,
+      });
+    }
+
+    const store = await prisma.store.create({
+      data: { name, userEmail: session?.user?.email },
+    });
+
+    return new NextResponse(JSON.stringify(store, { status: 200 }));
   } catch (error) {
+    console.log(error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 };

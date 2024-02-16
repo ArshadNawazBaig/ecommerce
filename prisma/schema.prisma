@@ -87,8 +87,8 @@ model Product {
 
 model Store {
   id        String @id @default(cuid()) @map("_id")
-  name      String
-  userId    String
+  name      String?
+  userEmail String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

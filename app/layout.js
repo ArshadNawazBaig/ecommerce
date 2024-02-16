@@ -3,6 +3,7 @@ import './globals.css';
 import AuthProvider from '@/providers/auth-provider';
 import StoreProvider from '@/providers/store-provider';
 import ModalProvider from '@/providers/modal-provider';
+import ToastProvider from '@/providers/toast-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
       <body>
         <StoreProvider>
           <AuthProvider>
+            <ToastProvider />
             <ModalProvider />
             {children}
           </AuthProvider>
