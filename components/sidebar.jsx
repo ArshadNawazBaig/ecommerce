@@ -27,7 +27,9 @@ const Sidebar = ({ className }) => {
     {
       href: `/${params.storeId}/categories`,
       label: 'Categories',
-      active: pathname === `/${params.storeId}/categories`,
+      active:
+        pathname === `/${params.storeId}/categories` ||
+        pathname === `/${params.storeId}/categories/${params.categoryId}`,
     },
   ];
   return (

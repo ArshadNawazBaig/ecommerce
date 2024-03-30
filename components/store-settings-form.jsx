@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import {
@@ -23,19 +23,27 @@ import toast from 'react-hot-toast';
 import Heading from './typography/heading';
 import { Separator } from './ui/separator';
 import { TrashIcon } from 'lucide-react';
-import Loading from '@/app/loading';
+import AlertModal from './modals/alert-modal';
 
 const formSchema = z.object({
   name: z.string().min(4),
 });
 
 const StoreSettingsForm = ({ initialData }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const params = useParams();
   const [updateStore, { data, error, isLoading, isError, isSuccess }] =
     useUpdateStoreMutation();
-  const [deleteStore, { isError: delError, isSuccess: delSuccess }] =
-    useDeleteStoreMutation();
+  const [
+    deleteStore,
+    {
+      isError: delError,
+      isSuccess: delSuccess,
+      error: delErr,
+      isLoading: delLoading,
+    },
+  ] = useDeleteStoreMutation();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -61,15 +69,16 @@ const StoreSettingsForm = ({ initialData }) => {
     if (isSuccess && data) {
       router.refresh();
       toast.success('Store successfully updated');
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 400);
     }
   }, [isError, isSuccess]);
 
   useEffect(() => {
-    if (delError) {
-      toast.error('Something went wrong');
+    if ((delError, delErr)) {
+      console.log(delErr);
+      toast.error(delErr.data);
     }
     if (delSuccess) {
       router.refresh();
@@ -79,9 +88,19 @@ const StoreSettingsForm = ({ initialData }) => {
 
   return (
     <>
+      <AlertModal
+        isOpen={isOpen}
+        loading={delLoading}
+        onClose={() => setIsOpen(false)}
+        onConfirm={handleDeleteStore}
+      />
       <div className="flex w-full justify-between items-center">
         <Heading title="Settings" subtitle="Manage your store" />
-        <Button variant="destructive" size="icon" onClick={handleDeleteStore}>
+        <Button
+          variant="destructive"
+          size="icon"
+          onClick={() => setIsOpen(true)}
+        >
           <TrashIcon />
         </Button>
       </div>

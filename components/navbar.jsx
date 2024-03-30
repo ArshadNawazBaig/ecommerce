@@ -30,10 +30,6 @@ const Navbar = () => {
     },
   };
 
-  useEffect(() => {
-    refetch();
-  }, []);
-
   return (
     <div className="min-h-[60px] flex items-center border-b px-4 justify-between">
       <div>

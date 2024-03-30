@@ -50,7 +50,6 @@ model User {
   accounts      Account[]
   sessions      Session[]
   products      Product[]
-  categories    Categories[]
 }
 
 model VerificationToken {
@@ -62,12 +61,13 @@ model VerificationToken {
 
 model Categories {
   id String @id @default(cuid()) @map("_id")
-  slug String @unique
+  storeId String
+  store Store @relation(fields: [storeId], references: [id])
   name String 
-  img String?
-  userEmail String
-  creator User @relation(fields: [userEmail], references: [email])
-  Product Product[]
+  billboardId String
+  billboard Billboard @relation(fields: [billboardId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Product {
@@ -77,8 +77,6 @@ model Product {
   desc String
   img String
   views Int @default(0)
-  categorySlug String 
-  category Categories @relation(fields: [categorySlug], references: [slug])
   userEmail String
   creator User @relation(fields: [userEmail], references: [email])
   createdAt DateTime @default(now())
@@ -90,6 +88,7 @@ model Store {
   name      String?
   userEmail String?
   billboards Billboard[]
+  categories Categories[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -98,6 +97,7 @@ model Billboard {
   id String @id @default(cuid()) @map("_id")
   storeId String
   store Store @relation(fields: [storeId], references: [id])
+  categories Categories[]
   label String
   imageUrl String
   createdAt DateTime @default(now())

@@ -63,17 +63,29 @@ export const PATCH = async (req, { params }) => {
 export const DELETE = async (req, { params }) => {
   try {
     const { id } = params;
-    console.log(id, 'delete');
     const session = await getAuthSession();
     const { email } = session?.user;
+    console.log(email, 'delete');
 
     if (!email) {
       return new NextResponse('Unauthenticated', { status: 401 });
     }
 
+    const billboard = await prisma.billboard.findFirst({
+      where: { storeId: id },
+    });
+
+    if (billboard) {
+      return NextResponse.json('You have active billboards', {
+        status: 400,
+      });
+    }
+
     const store = await prisma.store.deleteMany({
       where: { id, userEmail: email },
     });
+
+    console.log(store);
 
     if (!store) {
       return new NextResponse('Store not found', { status: 404 });
@@ -81,6 +93,7 @@ export const DELETE = async (req, { params }) => {
 
     return NextResponse.json(store, { status: 200 });
   } catch (error) {
+    console.log(error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 };

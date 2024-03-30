@@ -1,13 +1,8 @@
 import StoreSettingsForm from '@/components/store-settings-form';
-import Heading from '@/components/typography/heading';
-import { Button } from '@/components/ui/button';
-import { TrashIcon } from 'lucide-react';
 import React from 'react';
-import { Separator } from '@/components/ui/separator';
 import prisma from '@/utils/connect';
 import { getAuthSession } from '@/utils/auth';
 import { redirect } from 'next/navigation';
-import { useDeleteStoreMutation } from '@/lib/features/Stores';
 
 const Settings = async ({ params }) => {
   const session = await getAuthSession();

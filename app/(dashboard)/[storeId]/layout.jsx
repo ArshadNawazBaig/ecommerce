@@ -1,4 +1,5 @@
 'use client';
+import NavWrapper from '@/components/nav-wrapper';
 import Navbar from '@/components/navbar';
 import Sidebar from '@/components/sidebar';
 import { useSession } from 'next-auth/react';
@@ -13,7 +14,7 @@ const DashboardLayout = ({ children }) => {
 
   return (
     <div>
-      <Navbar />
+      <NavWrapper />
       <div className="flex">
         <Sidebar className="min-w-[250px]" />
         <main className="flex-grow p-4">{children}</main>

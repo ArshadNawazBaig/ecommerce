@@ -2,10 +2,14 @@ import Heading from '@/components/typography/heading';
 import React from 'react';
 import BillboardClient from './components/client';
 
-const Billboards = () => {
+const Billboards = async ({ params }) => {
+  const { storeId } = params;
+  const billboards = await prisma.billboard.findMany({
+    where: { storeId },
+  });
   return (
     <div>
-      <BillboardClient />
+      <BillboardClient data={billboards} />
     </div>
   );
 };

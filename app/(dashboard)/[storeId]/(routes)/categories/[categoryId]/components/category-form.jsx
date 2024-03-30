@@ -12,10 +12,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  useDeleteStoreMutation,
-  useUpdateStoreMutation,
-} from '@/lib/features/Stores';
+import { useDeleteStoreMutation } from '@/lib/features/Stores';
 import { useParams, useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import Heading from '@/components/typography/heading';
@@ -29,11 +26,11 @@ import {
 } from '@/lib/features/Billboards';
 
 const formSchema = z.object({
-  label: z.string().min(4),
-  imageUrl: z.string().min(1),
+  name: z.string().min(4),
+  billboardId: z.string().min(1),
 });
 
-const BillboardForm = ({ billboard }) => {
+const CategoryForm = ({ category }) => {
   const router = useRouter();
   const params = useParams();
   const [addBillboard, { data, error, isLoading, isError, isSuccess }] =
@@ -50,15 +47,15 @@ const BillboardForm = ({ billboard }) => {
   const [deleteStore, { isError: delError, isSuccess: delSuccess }] =
     useDeleteStoreMutation();
 
-  const title = billboard ? 'Edit Billboard' : 'Create Billboard';
-  const desc = billboard ? 'Edit a Billboard' : 'Create a new Billboard';
-  const action = billboard ? 'Save Changes' : 'Create Billboard';
+  const title = category ? 'Edit Category' : 'Create Category';
+  const desc = category ? 'Edit a Category' : 'Create a new Category';
+  const action = category ? 'Save Changes' : 'Create Category';
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: billboard || {
-      label: '',
-      imageUrl: '',
+    defaultValues: category || {
+      name: '',
+      billboardId: '',
     },
   });
 
@@ -72,7 +69,7 @@ const BillboardForm = ({ billboard }) => {
       },
     };
 
-    if (billboard) {
+    if (category) {
       updateBillboard(obj);
       console.log(obj);
     } else {
@@ -81,7 +78,7 @@ const BillboardForm = ({ billboard }) => {
   };
 
   const handleDeleteStore = () => {
-    deleteStore(billboard?.id);
+    deleteStore(category?.id);
   };
 
   useEffect(() => {
@@ -119,7 +116,7 @@ const BillboardForm = ({ billboard }) => {
     <>
       <div className="flex w-full justify-between items-center">
         <Heading title={title} subtitle={desc} />
-        {billboard && (
+        {category && (
           <Button variant="destructive" size="icon" onClick={handleDeleteStore}>
             <TrashIcon />
           </Button>
@@ -184,4 +181,4 @@ const BillboardForm = ({ billboard }) => {
   );
 };
 
-export default BillboardForm;
+export default CategoryForm;
