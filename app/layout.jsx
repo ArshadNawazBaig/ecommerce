@@ -18,9 +18,9 @@ export default function RootLayout({ children }) {
       <body>
         <StoreProvider>
           <AuthProvider>
+            {children}
             <ToastProvider />
             <ModalProvider />
-            {children}
           </AuthProvider>
         </StoreProvider>
       </body>

@@ -37,13 +37,11 @@ const StoreModal = () => {
   });
 
   const onSubmit = async (data) => {
-    console.log(data);
     addStore(data);
   };
 
   const handleClose = (e) => {
     e.preventDefault();
-    console.log('first');
     dispatch(onClose());
   };
 
@@ -51,11 +49,8 @@ const StoreModal = () => {
     if (isError) {
       toast.error(error.data);
     }
-    if (isSuccess) {
-      toast.success('Store is created successfully');
-    }
     if (isSuccess && data) {
-      window.location.assign(`/dashboard/${data.id}`);
+      window.location.assign(`/${data.id}`);
     }
   }, [isError, isSuccess]);
 

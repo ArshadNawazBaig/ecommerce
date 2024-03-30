@@ -5,10 +5,10 @@ import React from 'react';
 
 const SetupLayout = async ({ children }) => {
   const session = await getAuthSession();
-  const { email } = session?.user;
+  const { email } = session?.user || '';
 
   if (!email) {
-    redirect('/auth/signin');
+    redirect('/signin');
   }
 
   const existingStore = await prisma.store.findFirst({
@@ -16,7 +16,7 @@ const SetupLayout = async ({ children }) => {
   });
 
   if (existingStore) {
-    redirect(`/dashboard/${existingStore?.id}`);
+    redirect(`/${existingStore?.id}`);
   }
 
   return <>{children}</>;

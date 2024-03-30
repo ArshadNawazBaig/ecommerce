@@ -8,12 +8,13 @@ import { useDispatch, useSelector } from 'react-redux';
 
 export default function SetupPage() {
   const { isOpen } = useSelector((state) => state.modal);
+
   const { data: session, status } = useSession();
 
   const dispatch = useDispatch();
 
   if (status === 'unauthenticated') {
-    redirect('/auth/signin');
+    redirect('/signin');
   }
 
   useEffect(() => {

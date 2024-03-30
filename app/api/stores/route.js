@@ -9,7 +9,7 @@ export const POST = async (req) => {
 
     const { name } = body;
 
-    if (!session?.user?.email) {
+    if (!session) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
@@ -18,7 +18,7 @@ export const POST = async (req) => {
     }
 
     const existingStore = await prisma.store.findFirst({
-      where: { name },
+      where: { name, userEmail: session?.user?.email },
     });
 
     if (existingStore) {
@@ -33,7 +33,21 @@ export const POST = async (req) => {
 
     return new NextResponse(JSON.stringify(store, { status: 200 }));
   } catch (error) {
-    console.log(error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
+};
+
+export const GET = async (req, res) => {
+  const session = await getAuthSession();
+  const { email } = session?.user;
+
+  if (!email) {
+    return new NextResponse('Unauthenticated', { status: 401 });
+  }
+
+  const stores = await prisma.store.findMany({
+    where: { userEmail: email },
+  });
+
+  return new NextResponse(JSON.stringify(stores), { status: 200 });
 };

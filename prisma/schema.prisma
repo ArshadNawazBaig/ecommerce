@@ -89,6 +89,17 @@ model Store {
   id        String @id @default(cuid()) @map("_id")
   name      String?
   userEmail String?
+  billboards Billboard[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Billboard {
+  id String @id @default(cuid()) @map("_id")
+  storeId String
+  store Store @relation(fields: [storeId], references: [id])
+  label String
+  imageUrl String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

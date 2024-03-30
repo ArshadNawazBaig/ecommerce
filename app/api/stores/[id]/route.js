@@ -3,21 +3,84 @@ import prisma from '@/utils/connect';
 import { NextResponse } from 'next/server';
 
 export const GET = async (req, { params }) => {
-  const { id } = params;
-  const session = await getAuthSession();
-  const email = session?.user?.email;
+  try {
+    const { id } = params;
+    const session = await getAuthSession();
+    const email = session?.user?.email;
 
-  if (!email) {
-    return new NextResponse('Unauthenticated', { status: 401 });
+    if (!email) {
+      return new NextResponse('Unauthenticated', { status: 401 });
+    }
+
+    const store = await prisma.store.findUnique({
+      where: { id, userEmail: email },
+    });
+
+    if (!store) {
+      return new NextResponse('Store not found', { status: 404 });
+    }
+
+    return NextResponse.json(store, { status: 200 });
+  } catch (error) {
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
+};
 
-  const store = await prisma.store.findUnique({
-    where: { id, userEmail: email },
-  });
+export const PATCH = async (req, { params }) => {
+  try {
+    const { id } = params;
+    const session = await getAuthSession();
+    const { email } = session?.user;
+    const body = await req.json();
 
-  if (!store) {
-    return new NextResponse('Store not found', { status: 404 });
+    const { name } = body;
+
+    if (!email) {
+      return new NextResponse('Unauthenticated', { status: 401 });
+    }
+
+    if (!name) {
+      return new NextResponse('Name is required', { status: 400 });
+    }
+
+    const store = await prisma.store.updateMany({
+      where: { id, userEmail: email },
+      data: {
+        name,
+      },
+    });
+
+    if (!store) {
+      return new NextResponse('Store not found', { status: 404 });
+    }
+
+    return NextResponse.json(store, { status: 200 });
+  } catch (error) {
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
+};
 
-  return NextResponse.json(store, { status: 200 });
+export const DELETE = async (req, { params }) => {
+  try {
+    const { id } = params;
+    console.log(id, 'delete');
+    const session = await getAuthSession();
+    const { email } = session?.user;
+
+    if (!email) {
+      return new NextResponse('Unauthenticated', { status: 401 });
+    }
+
+    const store = await prisma.store.deleteMany({
+      where: { id, userEmail: email },
+    });
+
+    if (!store) {
+      return new NextResponse('Store not found', { status: 404 });
+    }
+
+    return NextResponse.json(store, { status: 200 });
+  } catch (error) {
+    return new NextResponse('Internal Server Error', { status: 500 });
+  }
 };

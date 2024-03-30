@@ -6,15 +6,16 @@ import React from 'react';
 const Store = ({ params }) => {
   const {
     data: store,
+    error,
     isLoading,
     isError,
   } = useGetStoreByIdQuery(params.storeId);
 
   if (!isLoading && !store) {
-    redirect('/dashboard');
+    redirect('/');
   }
 
-  return <div>Store</div>;
+  return <div>{store?.id}</div>;
 };
 
 export default Store;
