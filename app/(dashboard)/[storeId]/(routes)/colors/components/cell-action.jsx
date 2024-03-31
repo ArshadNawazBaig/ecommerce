@@ -7,7 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useDeleteSizeMutation } from '@/lib/features/Sizes';
+import { useDeleteColorMutation } from '@/lib/features/Colors';
 import { Copy, Edit, MoreHorizontal, Trash } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -17,21 +17,21 @@ const CellAction = ({ data }) => {
   const router = useRouter();
   const { storeId } = useParams();
   const [isOpen, setIsOpen] = useState(false);
-  const [deleteSize, { data: delData, isLoading, isError, isSuccess }] =
-    useDeleteSizeMutation();
+  const [deleteColor, { data: delData, isLoading, isError, isSuccess }] =
+    useDeleteColorMutation();
   const onDelete = () => {
     const obj = {
       storeId,
-      sizeId: data.id,
+      colorId: data.id,
     };
-    deleteSize(obj);
+    deleteColor(obj);
   };
   useEffect(() => {
     if (isError) {
       toast.error('Something went wrong');
     }
     if (isSuccess && delData) {
-      toast.success('Size is successfully deleted');
+      toast.success('Color is successfully deleted');
       setIsOpen(false);
       router.refresh();
     }
@@ -53,7 +53,7 @@ const CellAction = ({ data }) => {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem
-            onClick={() => router.push(`/${storeId}/sizes/${data.id}`)}
+            onClick={() => router.push(`/${storeId}/colors/${data.id}`)}
           >
             <Edit className="h-4 w-4 mr-3" /> Edit
           </DropdownMenuItem>

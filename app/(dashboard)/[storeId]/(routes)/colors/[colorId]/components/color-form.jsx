@@ -19,56 +19,51 @@ import { Separator } from '@/components/ui/separator';
 import { TrashIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  useAddCategoryMutation,
-  useDeleteCategoryMutation,
-  useUpdateCategoryMutation,
-} from '@/lib/features/Categories';
-import {
-  useAddSizeMutation,
-  useDeleteSizeMutation,
-  useUpdateSizeMutation,
-} from '@/lib/features/Sizes';
+  useAddColorMutation,
+  useDeleteColorMutation,
+  useUpdateColorMutation,
+} from '@/lib/features/Colors';
 
 const formSchema = z.object({
-  name: z.string().min(4),
+  name: z.string().min(1),
   value: z.string().min(1),
 });
 
-const SizeForm = ({ size }) => {
+const ColorForm = ({ color }) => {
   const router = useRouter();
   const params = useParams();
 
   const [
-    deleteSize,
+    deleteColor,
     { data: delData, isError: delError, isSuccess: delSuccess },
-  ] = useDeleteSizeMutation();
+  ] = useDeleteColorMutation();
 
   const [
-    addSize,
+    addColor,
     {
       data: addData,
       isError: addError,
       isSuccess: addSuccess,
       isLoading: addLoading,
     },
-  ] = useAddSizeMutation();
+  ] = useAddColorMutation();
   const [
-    updateSize,
+    updateColor,
     {
       data: updateData,
       isError: updateError,
       isSuccess: updateSuccess,
       isLoading: updateLoading,
     },
-  ] = useUpdateSizeMutation();
+  ] = useUpdateColorMutation();
 
-  const title = size ? 'Edit Size' : 'Create Size';
-  const desc = size ? 'Edit a Size' : 'Create a new Size';
-  const action = size ? 'Save Changes' : 'Create Size';
+  const title = color ? 'Edit Color' : 'Create Color';
+  const desc = color ? 'Edit a Color' : 'Create a new Color';
+  const action = color ? 'Save Changes' : 'Create Color';
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: size || {
+    defaultValues: color || {
       name: '',
       value: '',
     },
@@ -77,22 +72,22 @@ const SizeForm = ({ size }) => {
   const onSubmit = async (data) => {
     const obj = {
       storeId: params.storeId,
-      sizeId: params.sizeId,
-      size: {
+      colorId: params.colorId,
+      color: {
         name: data.name,
         value: data.value,
       },
     };
 
-    if (size) {
-      updateSize(obj);
+    if (color) {
+      updateColor(obj);
     } else {
-      addSize(obj);
+      addColor(obj);
     }
   };
 
   const handleDelete = () => {
-    deleteSize(size?.id);
+    deleteColor(color?.id);
   };
 
   useEffect(() => {
@@ -101,8 +96,8 @@ const SizeForm = ({ size }) => {
     }
     if (addSuccess && addData) {
       router.refresh();
-      toast.success('Size successfully created');
-      router.push(`/${params.storeId}/sizes`);
+      toast.success('Color successfully created');
+      router.push(`/${params.storeId}/colors`);
     }
   }, [addError, addSuccess]);
 
@@ -112,8 +107,8 @@ const SizeForm = ({ size }) => {
     }
     if (updateSuccess && updateData) {
       router.refresh();
-      toast.success('Size successfully updated');
-      router.push(`/${params.storeId}/sizes`);
+      toast.success('Color successfully updated');
+      router.push(`/${params.storeId}/colors`);
     }
   }, [updateError, updateSuccess]);
 
@@ -123,7 +118,7 @@ const SizeForm = ({ size }) => {
     }
     if (delSuccess) {
       router.refresh();
-      toast.success('Size successfully deleted');
+      toast.success('Color successfully deleted');
     }
   }, [delError, delSuccess]);
 
@@ -131,7 +126,7 @@ const SizeForm = ({ size }) => {
     <>
       <div className="flex w-full justify-between items-center">
         <Heading title={title} subtitle={desc} />
-        {size && (
+        {color && (
           <Button variant="destructive" size="icon" onClick={handleDelete}>
             <TrashIcon />
           </Button>
@@ -169,12 +164,18 @@ const SizeForm = ({ size }) => {
                   <FormItem>
                     <FormLabel>Value</FormLabel>
                     <FormControl>
-                      <Input
-                        disabled={addLoading}
-                        placeholder="Value"
-                        {...field}
-                        className="min-w-[200px]"
-                      />
+                      <div className="relative">
+                        <Input
+                          disabled={addLoading}
+                          placeholder="Value"
+                          {...field}
+                          className="min-w-[200px]"
+                        />
+                        <div
+                          className="h-6 w-6 rounded-full border-gray-400 absolute top-2 right-2"
+                          style={{ backgroundColor: field.value }}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -193,4 +194,4 @@ const SizeForm = ({ size }) => {
   );
 };
 
-export default SizeForm;
+export default ColorForm;

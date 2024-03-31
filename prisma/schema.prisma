@@ -49,7 +49,6 @@ model User {
   verified      Boolean?
   accounts      Account[]
   sessions      Session[]
-  products      Product[]
 }
 
 model VerificationToken {
@@ -64,23 +63,11 @@ model Categories {
   storeId String
   store Store @relation(fields: [storeId], references: [id])
   name String 
+  products Product[]
   billboardId String
   billboard Billboard @relation(fields: [billboardId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-model Product {
-  id String @id @default(cuid()) @map("_id")
-  slug String @unique
-  name String
-  desc String
-  img String
-  views Int @default(0)
-  userEmail String
-  creator User @relation(fields: [userEmail], references: [email])
-  createdAt DateTime @default(now())
-  isFeatured Boolean @default(false)
 }
 
 model Store {
@@ -89,7 +76,9 @@ model Store {
   userEmail String?
   billboards Billboard[]
   categories Categories[]
+  products Product[]
   sizes Size[]
+  colors Color[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -111,6 +100,47 @@ model Size {
   store Store @relation(fields: [storeId], references: [id])
   name String
   value String
+  products Product[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Color {
+  id String @id @default(cuid()) @map("_id")
+  storeId String
+  store Store @relation(fields: [storeId], references: [id])
+  name String
+  value String
+  products Product[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id String @id @default(cuid()) @map("_id")
+  storeId String
+  store Store @relation(fields: [storeId], references: [id])
+  categoryId String
+  category Categories @relation(fields: [categoryId], references: [id])
+  sizeId String
+  size Size @relation(fields: [sizeId], references: [id])
+  colorId String
+  color Color @relation(fields: [colorId], references: [id])
+  name String
+  price String
+  images Image[]
+  desc String
+  isFeatured Boolean @default(false)
+  isArchived Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Image {
+  id String @id @default(cuid()) @map("_id")
+  productId String
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

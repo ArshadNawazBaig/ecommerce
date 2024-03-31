@@ -38,6 +38,20 @@ const Sidebar = ({ className }) => {
         pathname === `/${params.storeId}/sizes` ||
         pathname === `/${params.storeId}/sizes/${params.sizeId}`,
     },
+    {
+      href: `/${params.storeId}/colors`,
+      label: 'Colors',
+      active:
+        pathname === `/${params.storeId}/colors` ||
+        pathname === `/${params.storeId}/colors/${params.colorId}`,
+    },
+    {
+      href: `/${params.storeId}/products`,
+      label: 'Products',
+      active:
+        pathname === `/${params.storeId}/products` ||
+        pathname === `/${params.storeId}/products/${params.productId}`,
+    },
   ];
   return (
     <div
