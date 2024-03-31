@@ -8,9 +8,8 @@ export const columns = [
     header: 'Name',
   },
   {
-    accessorKey: 'billboard',
-    header: 'Billboard',
-    cell: ({ row }) => row.original.billboard,
+    accessorKey: 'value',
+    header: 'Value',
   },
   {
     accessorKey: 'createdAt',

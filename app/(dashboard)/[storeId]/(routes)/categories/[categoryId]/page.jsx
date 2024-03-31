@@ -3,13 +3,13 @@ import CategoryForm from './components/category-form';
 import prisma from '@/utils/connect';
 
 const Category = async ({ params }) => {
-  const categories = await prisma?.categories?.findUnique({
+  const category = await prisma?.categories?.findUnique({
     where: { id: params.categoryId },
   });
 
   return (
     <div>
-      <CategoryForm categories={categories} />
+      <CategoryForm category={category} />
     </div>
   );
 };

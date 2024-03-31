@@ -5,6 +5,9 @@ const Categories = async ({ params }) => {
   const { storeId } = params;
   const categories = await prisma.categories.findMany({
     where: { storeId },
+    include: {
+      billboard: true,
+    },
   });
   return (
     <div>

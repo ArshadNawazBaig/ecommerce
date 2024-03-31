@@ -8,7 +8,7 @@ export const POST = async (req, { params }) => {
     const session = await getAuthSession();
     const body = await req.json();
 
-    const { name, billboardId } = body;
+    const { name, value } = body;
 
     if (!session) {
       return new NextResponse('Unauthenticated', { status: 401 });
@@ -18,8 +18,8 @@ export const POST = async (req, { params }) => {
       return new NextResponse('Name is required', { status: 400 });
     }
 
-    if (!billboardId) {
-      return new NextResponse('Billboard ID is required', { status: 400 });
+    if (!value) {
+      return new NextResponse('Value is required', { status: 400 });
     }
 
     if (!storeId) {
@@ -44,11 +44,11 @@ export const POST = async (req, { params }) => {
     //   });
     // }
 
-    const category = await prisma.categories.create({
-      data: { name, billboardId, storeId },
+    const size = await prisma.size.create({
+      data: { name, value, storeId },
     });
 
-    return new NextResponse(JSON.stringify(category, { status: 200 }));
+    return new NextResponse(JSON.stringify(size, { status: 200 }));
   } catch (error) {
     return new NextResponse('Internal Server Error', { status: 500 });
   }
@@ -61,12 +61,9 @@ export const GET = async (req, { params }) => {
     return new NextResponse('StoreID is required', { status: 401 });
   }
 
-  const categories = await prisma.categories.findMany({
+  const sizes = await prisma.size.findMany({
     where: { storeId },
-    include: {
-      billboard: true,
-    },
   });
 
-  return new NextResponse(JSON.stringify(categories), { status: 200 });
+  return new NextResponse(JSON.stringify(sizes, { status: 200 }));
 };

@@ -31,6 +31,13 @@ const Sidebar = ({ className }) => {
         pathname === `/${params.storeId}/categories` ||
         pathname === `/${params.storeId}/categories/${params.categoryId}`,
     },
+    {
+      href: `/${params.storeId}/sizes`,
+      label: 'Sizes',
+      active:
+        pathname === `/${params.storeId}/sizes` ||
+        pathname === `/${params.storeId}/sizes/${params.sizeId}`,
+    },
   ];
   return (
     <div

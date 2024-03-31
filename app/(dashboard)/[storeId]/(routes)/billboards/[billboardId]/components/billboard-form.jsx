@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button';
 import ImageUpload from '@/components/image-upload';
 import {
   useAddBillboardMutation,
+  useDeleteBillboardMutation,
   useUpdateBillboardMutation,
 } from '@/lib/features/Billboards';
 
@@ -47,8 +48,8 @@ const BillboardForm = ({ billboard }) => {
       isLoading: updateBillboardLoading,
     },
   ] = useUpdateBillboardMutation();
-  const [deleteStore, { isError: delError, isSuccess: delSuccess }] =
-    useDeleteStoreMutation();
+  const [deleteBillboard, { isError: delError, isSuccess: delSuccess }] =
+    useDeleteBillboardMutation();
 
   const title = billboard ? 'Edit Billboard' : 'Create Billboard';
   const desc = billboard ? 'Edit a Billboard' : 'Create a new Billboard';
@@ -81,7 +82,7 @@ const BillboardForm = ({ billboard }) => {
   };
 
   const handleDeleteStore = () => {
-    deleteStore(billboard?.id);
+    deleteBillboard(billboard?.id);
   };
 
   useEffect(() => {

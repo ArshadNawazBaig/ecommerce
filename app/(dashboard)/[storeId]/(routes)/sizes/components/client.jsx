@@ -9,8 +9,7 @@ import React, { useEffect } from 'react';
 import { columns } from './columns';
 import { format } from 'date-fns';
 
-const CategoriesClient = ({ data }) => {
-  console.log(data, 'billboards');
+const SizesClient = ({ data }) => {
   const { storeId } = useParams();
   const router = useRouter();
   const formatedData =
@@ -18,17 +17,17 @@ const CategoriesClient = ({ data }) => {
     data?.map((data) => ({
       id: data.id,
       name: data.name,
-      billboard: data.billboard.label,
+      value: data.value,
       createdAt: format(data.createdAt, 'MMMM do, yyyy'),
     }));
   return (
     <div>
       <div className="flex justify-between items-center">
         <Heading
-          title={`Categories (${data?.length || 0})`}
-          subtitle="Manage your categories"
+          title={`Sizes (${data?.length || 0})`}
+          subtitle="Manage your sizes"
         />
-        <Button onClick={() => router.push(`/${storeId}/categories/new`)}>
+        <Button onClick={() => router.push(`/${storeId}/sizes/new`)}>
           <PlusIcon className="mr-2 w-4 h-4" /> Add New
         </Button>
       </div>
@@ -42,4 +41,4 @@ const CategoriesClient = ({ data }) => {
   );
 };
 
-export default CategoriesClient;
+export default SizesClient;
