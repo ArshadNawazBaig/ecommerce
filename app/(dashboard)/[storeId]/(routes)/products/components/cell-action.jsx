@@ -7,7 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useDeleteBillboardMutation } from '@/lib/features/Billboards';
+import { useDeleteProductMutation } from '@/lib/features/Products';
 import { Copy, Edit, MoreHorizontal, Trash } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -17,21 +17,21 @@ const CellAction = ({ data }) => {
   const router = useRouter();
   const { storeId } = useParams();
   const [isOpen, setIsOpen] = useState(false);
-  const [deleteBillboard, { data: delData, isLoading, isError, isSuccess }] =
-    useDeleteBillboardMutation();
+  const [deleteProduct, { data: delData, isLoading, isError, isSuccess }] =
+    useDeleteProductMutation();
   const onDelete = () => {
     const obj = {
       storeId,
-      billboardId: data.id,
+      productId: data.id,
     };
-    deleteBillboard(obj);
+    deleteProduct(obj);
   };
   useEffect(() => {
     if (isError) {
       toast.error('Something went wrong');
     }
     if (isSuccess && delData) {
-      toast.success('Billboard is successfully deleted');
+      toast.success('Product is successfully deleted');
       setIsOpen(false);
       router.refresh();
       // setTimeout(() => {
@@ -56,7 +56,7 @@ const CellAction = ({ data }) => {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem
-            onClick={() => router.push(`/${storeId}/billboards/${data.id}`)}
+            onClick={() => router.push(`/${storeId}/products/${data.id}`)}
           >
             <Edit className="h-4 w-4 mr-3" /> Edit
           </DropdownMenuItem>

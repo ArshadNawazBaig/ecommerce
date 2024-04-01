@@ -22,9 +22,9 @@ const ProductClient = ({ data }) => {
     category: data.category.name,
     color: data.color.value,
     size: data.size.name,
-    images: data.images,
     createdAt: format(data.createdAt, 'MMMM do, yyyy'),
   }));
+  console.log(formatedData, 'formated data');
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -40,7 +40,7 @@ const ProductClient = ({ data }) => {
       <DataTable
         columns={columns}
         data={formatedData?.length > 0 && formatedData}
-        searchParams="label"
+        searchParams="name"
       />
     </div>
   );

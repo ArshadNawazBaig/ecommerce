@@ -24,7 +24,7 @@ const ImageUpload = ({ disabled, onChange, onRemove, value, placeholder }) => {
 
   return (
     <div className="">
-      <div className="flex items-center gap-4 mb-3">
+      <div className="flex items-center gap-4 mb-1">
         {value.map((url) => (
           <div
             key={url}

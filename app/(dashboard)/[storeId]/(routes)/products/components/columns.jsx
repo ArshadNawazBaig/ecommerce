@@ -13,21 +13,21 @@ export const columns = [
   },
   {
     accessorKey: 'isFeatured',
-    header: 'IsFeatured',
+    header: 'Featured',
   },
   {
     accessorKey: 'isArchived',
-    header: 'IsArchived',
+    header: 'Archived',
   },
   {
     accessorKey: 'color',
     header: 'Color',
     cell: ({ row }) => (
       <div className="relative flex items-center">
-        {row.original.value}
+        {row.original.color}
         <div
           className="h-4 w-4 ml-2 rounded-full border-gray-400"
-          style={{ backgroundColor: row.original.value }}
+          style={{ backgroundColor: row.original.color }}
         />
       </div>
     ),

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -12,10 +13,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  useDeleteStoreMutation,
-  useUpdateStoreMutation,
-} from '@/lib/features/Stores';
 import { useParams, useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import Heading from '@/components/typography/heading';
@@ -23,40 +20,76 @@ import { Separator } from '@/components/ui/separator';
 import { TrashIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ImageUpload from '@/components/image-upload';
+import { useGetCategoriesQuery } from '@/lib/features/Categories';
+import SelectMenu from '@/components/select';
+import { useGetColorsQuery } from '@/lib/features/Colors';
+import { useGetSizesQuery } from '@/lib/features/Sizes';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
-  useAddBillboardMutation,
-  useDeleteBillboardMutation,
-  useUpdateBillboardMutation,
-} from '@/lib/features/Billboards';
+  useAddProductMutation,
+  useDeleteProductMutation,
+  useUpdateProductMutation,
+} from '@/lib/features/Products';
 
 const formSchema = z.object({
   name: z.string().min(4),
   price: z.string().min(1),
-  desc: z.string().min(10),
-  isFeatured: z.boolean(),
-  isArchived: z.boolean(),
-  category: z.string().min(1),
-  color: z.string().min(1),
-  size: z.string().min(1),
-  images: z.object({ url: z.string() }).array(),
+  // desc: z.string().min(10),
+  isFeatured: z.boolean().default(false).optional(),
+  isArchived: z.boolean().default(false).optional(),
+  categoryId: z.string().min(1),
+  colorId: z.string().min(1),
+  sizeId: z.string().min(1),
+  images: z.object({ url: z.string() }).array().min(1),
 });
 
 const ProductForm = ({ product }) => {
   const router = useRouter();
   const params = useParams();
-  const [addBillboard, { data, error, isLoading, isError, isSuccess }] =
-    useAddBillboardMutation();
+  const { data, error, isLoading, isError, isSuccess } = useGetCategoriesQuery(
+    params.storeId
+  );
+  const {
+    data: colorData,
+    error: colorError,
+    isLoading: colorLoading,
+    isError: colorErr,
+    isSuccess: colorSuccess,
+  } = useGetColorsQuery(params.storeId);
+  const {
+    data: sizeData,
+    error: sizeError,
+    isLoading: sizeLoading,
+    isError: sizeErr,
+    isSuccess: sizeSuccess,
+  } = useGetSizesQuery(params.storeId);
   const [
-    updateBillboard,
+    addProduct,
     {
-      data: updateBillboardData,
-      isSuccess: updateBillboardSuccess,
-      isError: updateBillboardError,
-      isLoading: updateBillboardLoading,
+      data: addProductData,
+      isSuccess: addProductSuccess,
+      isError: addProductError,
+      isLoading: addProductLoading,
     },
-  ] = useUpdateBillboardMutation();
-  const [deleteBillboard, { isError: delError, isSuccess: delSuccess }] =
-    useDeleteBillboardMutation();
+  ] = useAddProductMutation();
+  const [
+    updateProduct,
+    {
+      data: updateProductData,
+      isSuccess: updateProductSuccess,
+      isError: updateProductError,
+      isLoading: updateProductLoading,
+    },
+  ] = useUpdateProductMutation();
+  const [deleteProduct, { isError: delError, isSuccess: delSuccess }] =
+    useDeleteProductMutation();
+
+  const handleFormat = (data) => {
+    return data?.map((item) => ({
+      value: item.id,
+      label: item.name,
+    }));
+  };
 
   const title = product ? 'Edit Product' : 'Create Product';
   const desc = product ? 'Edit a Product' : 'Create a new Product';
@@ -67,7 +100,7 @@ const ProductForm = ({ product }) => {
     defaultValues: product || {
       name: '',
       price: '',
-      desc: '',
+      // desc: '',
       isFeatured: false,
       isArchived: false,
       categoryId: '',
@@ -80,45 +113,52 @@ const ProductForm = ({ product }) => {
   const onSubmit = async (data) => {
     const obj = {
       storeId: params.storeId,
-      billboardId: params.billboardId,
-      billboard: {
-        label: data.label,
-        imageUrl: data.imageUrl,
+      productId: params.productId,
+      product: {
+        name: data.name,
+        images: data.images,
+        price: data.price,
+        isFeatured: data.isFeatured,
+        isArchived: data.isArchived,
+        categoryId: data.categoryId,
+        sizeId: data.sizeId,
+        colorId: data.colorId,
       },
     };
 
     if (product) {
-      updateBillboard(obj);
+      updateProduct(obj);
       console.log(obj);
     } else {
-      addBillboard(obj);
+      addProduct(obj);
     }
   };
 
   const handleDeleteStore = () => {
-    deleteBillboard(product?.id);
+    deleteProduct(product?.id);
   };
 
   useEffect(() => {
-    if (isError) {
+    if (addProductError) {
       toast.error('Something went wrong');
     }
-    if (isSuccess && data) {
+    if (addProductSuccess && addProductData) {
       router.refresh();
-      toast.success('Billboard successfully created');
-      router.push(`/${params.storeId}/billboards`);
+      toast.success('Product successfully created');
+      router.push(`/${params.storeId}/products`);
     }
-  }, [isError, isSuccess]);
+  }, [addProductError, addProductSuccess]);
 
   useEffect(() => {
-    if (updateBillboardError) {
+    if (updateProductError) {
       toast.error('Something went wrong');
     }
-    if (updateBillboardSuccess && updateBillboardData) {
+    if (updateProductSuccess && updateProductData) {
       router.refresh();
-      toast.success('Billboard successfully updated');
+      toast.success('Product successfully updated');
+      router.push(`/${params.storeId}/products`);
     }
-  }, [updateBillboardError, updateBillboardSuccess]);
+  }, [updateProductError, updateProductSuccess]);
 
   useEffect(() => {
     if (delError) {
@@ -126,7 +166,7 @@ const ProductForm = ({ product }) => {
     }
     if (delSuccess) {
       router.refresh();
-      toast.success('Billboard successfully deleted');
+      toast.success('Product successfully deleted');
     }
   }, [delError, delSuccess]);
 
@@ -141,67 +181,211 @@ const ProductForm = ({ product }) => {
         )}
       </div>
       <Separator className="mt-4 mb-4" />
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-2"
+        >
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-12">
+              <FormField
+                className="mt-2"
+                control={form.control}
+                name="images"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Product Images</FormLabel>
+                    <FormControl>
+                      <ImageUpload
+                        placeholder="Upload product images"
+                        value={field.value.map((image) => image.url)}
+                        //   disabled={loading}
+                        onChange={(url) =>
+                          field.onChange([...field.value, { url }])
+                        }
+                        onRemove={(url) =>
+                          field.onChange(
+                            field.value.filter((value) => value.url !== url)
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="col-span-6">
+              <FormField
+                name="name"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={isLoading}
+                        placeholder="Product Name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-3">
+              <FormField
+                name="price"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={isLoading}
+                        placeholder="Product Price"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="col-span-3">
+              <FormField
+                className="mt-2"
+                control={form.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <FormControl>
+                      <SelectMenu
+                        disabled={isLoading}
+                        onChange={field.onChange}
+                        value={field.value}
+                        placeholder="Select Category"
+                        items={handleFormat(data)}
+                        className="min-w-[200px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-3">
+              <FormField
+                className="mt-2"
+                control={form.control}
+                name="colorId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Color</FormLabel>
+                    <FormControl>
+                      <SelectMenu
+                        disabled={isLoading}
+                        onChange={field.onChange}
+                        value={field.value}
+                        placeholder="Select Color"
+                        items={handleFormat(colorData)}
+                        className="min-w-[200px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="col-span-3">
+              <FormField
+                className="mt-2"
+                control={form.control}
+                name="sizeId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Size</FormLabel>
+                    <FormControl>
+                      <SelectMenu
+                        disabled={isLoading}
+                        onChange={field.onChange}
+                        value={field.value}
+                        placeholder="Select Size"
+                        items={handleFormat(sizeData)}
+                        className="min-w-[200px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-12 gap-4 mt-2">
+            <div className="col-span-3">
+              <FormField
+                className="mt-2"
+                control={form.control}
+                name="isFeatured"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 rounded-md border p-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="!-mt-[6px]">
+                      <FormLabel>Featured</FormLabel>
+                      <FormDescription>
+                        product will appear on the homepage
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="col-span-3">
+              <FormField
+                className="mt-2"
+                control={form.control}
+                name="isArchived"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 rounded-md border p-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="!-mt-[6px]">
+                      <FormLabel>Archived</FormLabel>
+                      <FormDescription>
+                        product will not appear anywhere in the store
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
 
-      <div className="max-w-[300px]">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-2"
-          >
-            <FormField
-              name="name"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="Product Name"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              className="mt-2"
-              control={form.control}
-              name="images"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Product Images</FormLabel>
-                  <FormControl>
-                    <ImageUpload
-                      placeholder="Upload product images"
-                      value={field.value.map((image) => image.url)}
-                      //   disabled={loading}
-                      onChange={(url) =>
-                        field.onChange([...field.value, { url }])
-                      }
-                      onRemove={(url) =>
-                        field.onChange(
-                          field.value.filter((value) => value.url !== url)
-                        )
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="pt-4 gap-3 flex">
+            <div className="col-span-12">
               <Button
                 type="submit"
-                disabled={isLoading || updateBillboardLoading}
+                disabled={addProductLoading || updateProductLoading}
               >
-                {isLoading || updateBillboardLoading ? 'Loading' : action}
+                {addProductLoading || updateProductLoading ? 'Loading' : action}
               </Button>
             </div>
-          </form>
-        </Form>
-      </div>
+          </div>
+        </form>
+      </Form>
     </>
   );
 };
