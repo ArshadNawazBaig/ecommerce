@@ -1,6 +1,7 @@
 import Heading from '@/components/typography/heading';
 import React from 'react';
 import ProductClient from './components/client';
+import prisma from '@/utils/connect';
 
 const Products = async ({ params }) => {
   const { storeId } = params;

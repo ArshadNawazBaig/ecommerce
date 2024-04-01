@@ -1,5 +1,6 @@
 import React from 'react';
 import CategoriesClient from './components/client';
+import prisma from '@/utils/connect';
 
 const Categories = async ({ params }) => {
   const { storeId } = params;

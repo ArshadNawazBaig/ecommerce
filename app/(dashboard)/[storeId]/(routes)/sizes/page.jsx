@@ -1,5 +1,6 @@
 import React from 'react';
 import SizesClient from './components/client';
+import prisma from '@/utils/connect';
 
 const Sizes = async ({ params }) => {
   const { storeId } = params;

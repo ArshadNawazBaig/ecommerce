@@ -1,5 +1,6 @@
 import React from 'react';
 import ColorsClient from './components/client';
+import prisma from '@/utils/connect';
 
 const Colors = async ({ params }) => {
   const { storeId } = params;
